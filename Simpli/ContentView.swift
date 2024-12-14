@@ -3,7 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var selectedTab: String = "Clients" // State to track
+    @State private var selectedTab: String = "Home" // State to track
     @State private var isSelected: Bool = false
 
     var body: some View {
@@ -65,7 +65,7 @@ struct ContentView: View {
             // Display different content based on the selectedTab value
             switch selectedTab {
             case "Home":
-                Text("Tu będzie główna strona")
+                WelcomeView()
                     .padding()
             case "Clients":
                 ClientListView() // Dodanie widoku ClientFieldsView

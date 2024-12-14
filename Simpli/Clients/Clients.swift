@@ -6,24 +6,26 @@ struct Clients: View {
     var clientEmail: String
     var clientPhone: String
     var clientAddress: String
-    var isHighlighted: Bool // Przekazywana z zewnątrz właściwość do animacji
+
+    @Binding var highlighted: Bool
 
     @State private var isHovered: Bool = false // Stan najechania
     @State private var isPressed: Bool = false // Stan kliknięcia
-
-    @State private var highlightAnimation: Bool = false
+    
+    @State private var showSheet = false
 
     var body: some View {
         ZStack {
             // Tło z animacją
             Rectangle()
-                .fill(highlightAnimation ? Color.yellow.opacity(0.1) : Color.gray.opacity(0.1))
+                .fill(
+                    highlighted ? Color.yellow.opacity(0.2) :
+                    isPressed ? Color.gray.opacity(0.3) :
+                    isHovered ? Color.gray.opacity(0.12) :
+                    Color.gray.opacity(0.07)
+                )
                 .cornerRadius(8)
-                .shadow(radius: 5)
-                .scaleEffect(isHovered ? 1.05 : 1) // Powiększenie przy hover
-                .onHover { hovering in
-                    isHovered = hovering // Zmiana stanu podczas najechania
-                }
+                .animation(.easeInOut(duration: 0.7), value: highlighted) // Animacja koloru
 
             HStack {
                 // Imię klienta z ikoną
@@ -38,9 +40,9 @@ struct Clients: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Pionowy separator
-                Rectangle()
-                    .frame(width: 1, height: 30)
-                    .foregroundColor(.gray)
+                Divider()
+                    .frame(height: 30)
+                    .background(Color.gray)
 
                 // Email z ikoną
                 HStack {
@@ -54,9 +56,9 @@ struct Clients: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Pionowy separator
-                Rectangle()
-                    .frame(width: 1, height: 30)
-                    .foregroundColor(.gray)
+                Divider()
+                    .frame(height: 30)
+                    .background(Color.gray)
 
                 // Telefon z ikoną
                 HStack {
@@ -70,9 +72,9 @@ struct Clients: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Pionowy separator
-                Rectangle()
-                    .frame(width: 1, height: 30)
-                    .foregroundColor(.gray)
+                Divider()
+                    .frame(height: 30)
+                    .background(Color.gray)
 
                 // Adres z ikoną
                 HStack {
@@ -83,12 +85,41 @@ struct Clients: View {
                         .foregroundColor(.gray)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                
             }
             .padding(16)
         }
+        .scaleEffect(isHovered ? 1.007 : 1) // Powiększenie przy hover
+        .onHover { hovering in
+            withAnimation {
+                isHovered = hovering // Obsługa hover
+            }
+            if isHovered {
+                NSCursor.pointingHand.set()
+            }
+            else {
+                NSCursor.arrow.set()
+            }
+        }
+        .onTapGesture {
+            isPressed.toggle() // Zmiana stanu kliknięcia
+            showSheet.toggle()
+        }
+        .sheet(isPresented: $showSheet) {
+            ClientInfo() // Okno, które się pojawi po kliknięciu przycisku
+        }
+        .onAppear {
+            // Zaczynamy nasłuchiwanie na naciśnięcie klawisza ESC
+            NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                if event.keyCode == 53 { // ESC key code
+                    isPressed = false // Zmieniamy stan na false po naciśnięciu ESC
+                }
+                return event
+            }
+        }
+    
     }
 }
+
 #Preview {
     ClientListView()
 }

@@ -19,12 +19,18 @@ struct CustomCard: View {
             }
             .font(.title2)
             .padding(.vertical, 6)
-            .scaleEffect(isHovered ? 1.02 : 1) // Efekt powiększenia przy hover
+            .scaleEffect(isHovered ? 1.01 : 1) // Efekt powiększenia przy hover
         }
         .frame(maxWidth: .infinity)
         .onHover { hovering in
             withAnimation {
                 isHovered = hovering // Obsługa hover
+            }
+            if isHovered {
+                NSCursor.pointingHand.set()
+            }
+            else {
+                NSCursor.arrow.set()
             }
         }
     }

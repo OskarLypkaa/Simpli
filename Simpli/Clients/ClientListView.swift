@@ -1,5 +1,7 @@
 import SwiftUI
-// Widok listy klientów z filtrowaniem i nagłówkami
+
+
+// Widok listy klientów z filtrowaniem i sortowaniem
 struct ClientListView: View {
     let clients = [
         Client(name: "John Doe", email: "john.doe@example.com", phone: "+1 234 567 890", address: "123 Elm Street, Springfield"),
@@ -15,7 +17,14 @@ struct ClientListView: View {
     ]
     
     @State private var searchText: String = ""
-    @State private var startAnimation: Bool = false
+    @State private var highlighted: Bool = false
+    @State private var sortBy: SortCriteria = .name
+    @State private var isAscending: Bool = true // Dodane: flaga do przełączania porządku sortowania
+    @State private var showSheet = false
+    
+    enum SortCriteria {
+        case name, email, phone, address
+    }
     
     var filteredClients: [Client] {
         if searchText.isEmpty {
@@ -30,6 +39,22 @@ struct ClientListView: View {
         }
     }
     
+    var sortedClients: [Client] {
+        let sorted = filteredClients.sorted { (client1, client2) -> Bool in
+            switch sortBy {
+            case .name:
+                return isAscending ? client1.name < client2.name : client1.name > client2.name
+            case .email:
+                return isAscending ? client1.email < client2.email : client1.email > client2.email
+            case .phone:
+                return isAscending ? client1.phone < client2.phone : client1.phone > client2.phone
+            case .address:
+                return isAscending ? client1.address < client2.address : client1.address > client2.address
+            }
+        }
+        return sorted
+    }
+    
     var body: some View {
         VStack {
             // Pasek wyszukiwania
@@ -37,51 +62,146 @@ struct ClientListView: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
                     .padding(.leading, 10)
-                TextField("Wyszukaj klienta", text: $searchText)
+                TextField("Search for client", text: $searchText)
                     .padding(10)
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(10)
-                    .padding(.horizontal)
+                    
+                Image(systemName: "person.fill.badge.plus")
+                    .font(.system(size: 30))
+                    .padding(.leading, 15)
+                    .padding(.top, 5)
+                    .onHover { hovering in
+                        if hovering {
+                            NSCursor.pointingHand.set()
+                        } else {
+                            NSCursor.arrow.set()
+                        }
+                    }
+                    .onTapGesture {
+                        showSheet.toggle()
+                    }
+                    .sheet(isPresented: $showSheet) {
+                        AddClient() // Okno, które się pojawi po kliknięciu przycisku
+                    }
+                Image(systemName: "person.fill.badge.minus")
+                    .font(.system(size: 30))
+                    .padding(.leading, 15)
+                    .padding(.top, 5)
+                    .onHover { hovering in
+                        if hovering {
+                            NSCursor.pointingHand.set()
+                        } else {
+                            NSCursor.arrow.set()
+                        }
+                    }
             }
-            .padding(.vertical)
-            
-            // Nagłówki tabeli
-            
-            ZStack {
+            .padding(.trailing, 20)
+            .padding()
+            .onChange(of: searchText) {
+                highlighted = true
+                DispatchQueue.main.asyncAfter(deadline: .now()) {
+                    highlighted = false
+                }
+            }
 
+            // Nagłówki tabeli (kliknięcie sortuje)
+            HStack {
                 HStack {
                     Text("Name")
                         .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Email")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Phone")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Address")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: "arrow.up.arrow.down.circle.fill")
+                        .foregroundColor(.gray)
+                        .frame(width: 10, height: 10)
+                        .padding(.leading, 3)
+                        .onHover { hovering in
+                            if hovering {
+                                NSCursor.pointingHand.set()
+                            } else {
+                                NSCursor.arrow.set()
+                            }
+                        }
+                        .onTapGesture {
+                            sortBy = .name
+                            isAscending.toggle() // Przełączenie porządku sortowania
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text("email")
+                        .font(.headline)
+                    Image(systemName: "arrow.up.arrow.down.circle.fill")
+                        .foregroundColor(.gray)
+                        .frame(width: 10, height: 10)
+                        .padding(.leading, 3)
+                        .onHover { hovering in
+                            if hovering {
+                                NSCursor.pointingHand.set()
+                            } else {
+                                NSCursor.arrow.set()
+                            }
+                        }
+                        .onTapGesture {
+                            sortBy = .email
+                            isAscending.toggle() // Przełączenie porządku sortowania
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text("phone")
+                        .font(.headline)
+                    Image(systemName: "arrow.up.arrow.down.circle.fill")
+                        .foregroundColor(.gray)
+                        .frame(width: 10, height: 10)
+                        .padding(.leading, 3)
+                        .onHover { hovering in
+                            if hovering {
+                                NSCursor.pointingHand.set()
+                            } else {
+                                NSCursor.arrow.set()
+                            }
+                        }
+                        .onTapGesture {
+                            sortBy = .phone
+                            isAscending.toggle() // Przełączenie porządku sortowania
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text("address")
+                        .font(.headline)
+                    Image(systemName: "arrow.up.arrow.down.circle.fill")
+                        .foregroundColor(.gray)
+                        .frame(width: 10, height: 10)
+                        .padding(.leading, 3)
+                        .onHover { hovering in
+                            if hovering {
+                                NSCursor.pointingHand.set()
+                            } else {
+                                NSCursor.arrow.set()
+                            }
+                        }
+                        .onTapGesture {
+                            sortBy = .address
+                            isAscending.toggle() // Przełączenie porządku sortowania
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
             }
-            .padding(.leading, 35)
-            .padding(.trailing, 35)
-        
-
-            
-
+            .padding(.leading, 70)
+            .padding(.trailing, 0)
 
             // Lista klientów
             ScrollView {
                 VStack(spacing: 16) {
-                    ForEach(filteredClients, id: \.name) { client in
+                    ForEach(sortedClients, id: \.name) { client in
                         Clients(
                             clientName: client.name,
                             clientEmail: client.email,
                             clientPhone: client.phone,
                             clientAddress: client.address,
-                            isHighlighted: startAnimation
+                            highlighted: $highlighted
                         )
                     }
                 }
@@ -94,10 +214,3 @@ struct ClientListView: View {
 #Preview {
     ClientListView()
 }
-
-// Poprawić trzeba żeby na żółto wyświetlały się wyszukane pliki
-// Trzeba zrobić tak żeby na góże po między polem wyszukania a elementami pojawił się pasek name email itp
-// Animacja klikania klienta ma być a animacja najechania ma też powiększać tekst
-// trzeba wyrównać pasek na górze i pasek scrolowania
-// dodać filtr
-// elementy każdego okna mają być w równej odległości
