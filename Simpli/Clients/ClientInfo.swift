@@ -5,14 +5,14 @@ struct ClientInfo: View {
     var body: some View {
         VStack(spacing: 20) {
             // Nagłówek
-            Text("Informacje o kliencie")
+            Text("Client information")
                 .font(.title)
                 .fontWeight(.bold)
                 .padding(.top, 20)
             
             // Imię klienta
             HStack {
-                Text("Imię:")
+                Text("Name:")
                     .font(.headline)
                 Text("Example name")
                     .font(.body)

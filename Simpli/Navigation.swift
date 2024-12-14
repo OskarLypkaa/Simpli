@@ -15,7 +15,10 @@ struct CustomCard: View {
 
             HStack {
                 Text(title)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading)
                 Image(systemName: imageName)
+                    .frame(maxWidth: .infinity)
             }
             .font(.title2)
             .padding(.vertical, 6)

@@ -58,9 +58,19 @@ struct ContentView: View {
                 .onTapGesture {
                     selectedTab = "Data"
                 }
+                
+                // Data Tab
+                CustomCard(
+                    title: "Calendar",
+                    imageName: "calendar",
+                    isSelected: selectedTab == "Calendar"
+                )
+                .onTapGesture {
+                    selectedTab = "Calendar"
+                }
             }
             .padding(.top, 10)
-            .navigationSplitViewColumnWidth(min: 100, ideal: 160, max: 200)
+            .navigationSplitViewColumnWidth(min: 210, ideal: 210, max: 270)
         } detail: {
             // Display different content based on the selectedTab value
             switch selectedTab {
@@ -78,6 +88,9 @@ struct ContentView: View {
                     .padding()
             case "Raports":
                 Text("Tu będą raporty")
+                    .padding()
+            case "Calendar":
+                SimpleCalendar()
                     .padding()
             default:
                 Text("Select a Tab")
