@@ -1,13 +1,12 @@
 import SwiftUI
-import SwiftData
 
 @main
-struct SimpliApp: App {
-
+struct YourApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+                .frame(minWidth: 1200, maxWidth: .infinity, minHeight: 500, maxHeight: .infinity)
         }
-
     }
 }
+

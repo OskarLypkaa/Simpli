@@ -3,6 +3,7 @@ import SwiftUI
 struct SimpleCalendar: View {
     @State private var displayedDate: Date = Date()
     @State private var selectedDay: SelectableDay? = nil // Zmieniona na SelectableDay
+    @State private var isHovered: Bool = false
     let calendar = Calendar.current
 
     var body: some View {
@@ -44,19 +45,28 @@ struct SimpleCalendar: View {
                         .font(.body)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding()
-                        .background(self.isCurrentDay(day) ? Color.yellow.opacity(0.2) : Color.clear)
+                        .background(
+                            self.isCurrentDay(day) ? Color.yellow.opacity(0.2) : Color.gray.opacity(0.05))
 
                         .cornerRadius(5)
                         .shadow(color: Color.gray.opacity(0.5), radius: 2, x: 0, y: 2)
                         .onTapGesture {
                             selectDay(day)
                         }
+                        .onHover { hovering in
+                            isHovered = hovering
+                            if hovering {
+                                NSCursor.pointingHand.set()
+                            }
+                            else {
+                                NSCursor.arrow.set()
+                            }
+                        }
                 }
             }
             .padding()
-            .background(Color(NSColor.windowBackgroundColor))
-            .cornerRadius(10)
-            .shadow(radius: 5)
+            .background(Color.gray.opacity(0.07))
+            .cornerRadius(8)
         }
         .padding()
         .sheet(item: $selectedDay) { selectedDay in

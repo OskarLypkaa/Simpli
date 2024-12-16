@@ -88,7 +88,7 @@ struct Clients: View {
             }
             .padding(16)
         }
-        .scaleEffect(isHovered ? 1.007 : 1) // Powiększenie przy hover
+        .scaleEffect(isHovered ? 1.005 : 1) // Powiększenie przy hover
         .onHover { hovering in
             withAnimation {
                 isHovered = hovering // Obsługa hover
