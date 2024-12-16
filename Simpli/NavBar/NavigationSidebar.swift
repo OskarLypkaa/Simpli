@@ -39,13 +39,6 @@ struct NavigationSidebar: View {
                 imageName: "chart.pie.fill",
                 isSelected: $selectedTab
             )
-
-            // Data Tab
-            NavElement(
-                title: "Data",
-                imageName: "chart.bar.fill",
-                isSelected: $selectedTab
-            )
             
             // Setting Tab
             NavElement(

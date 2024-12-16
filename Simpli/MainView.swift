@@ -21,11 +21,8 @@ struct MainView: View {
             case "Calendar":
                 SimpleCalendar()
                     .padding()
-            case "Data":
-                DataView()
-                    .padding()
             case "Reports":
-                Text("Tu będą raporty")
+                ReportView()
                     .padding()
             case "Settings":
                 SettingsView()

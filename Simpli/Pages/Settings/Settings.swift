@@ -10,32 +10,38 @@ class Settings: ObservableObject {
     // Tryb jasny/ciemny
     @Published var themeMode: ThemeMode
 
+    // Styl animacji
+    @Published var animationStyle: AnimationStyle
+
     // Wybrany język
     @Published var language: Language
 
-    // Prywatny inicjalizator, aby wymusić użycie singletona
+    // Prywatny inicjalizator
     private init(
         sharedPath: String = "",
         themeMode: ThemeMode = .system,
+        animationStyle: AnimationStyle = .minimalistic,
         language: Language = .english
     ) {
         self.sharedPath = sharedPath
         self.themeMode = themeMode
+        self.animationStyle = animationStyle
         self.language = language
     }
-    
-    // Zapisz ustawienia (do implementacji w przyszłości)
-    func saveSettings() {
-        // Możesz zaimplementować zapis do pliku tutaj
-        print("Settings saved!")
-    }
 }
+
 
 // Enum dla trybu jasny/ciemny
 enum ThemeMode: String, CaseIterable {
     case system = "System"
     case light = "Light"
     case dark = "Dark"
+}
+
+enum AnimationStyle: String, CaseIterable {
+    case none = "None"
+    case minimalistic = "Minimalistic"
+    case maximum = "Maximum"
 }
 
 // Enum dla języków
@@ -50,35 +56,68 @@ struct SettingsView: View {
     @ObservedObject private var settings = Settings.shared
 
     var body: some View {
-        Form {
-            Spacer()
-            Section(header: Text("Paths").font(.title)) {
-                HStack {
-                    Text("Storage Path:")
-                    TextField("", text: $settings.sharedPath)
+        Text("App Settings")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .multilineTextAlignment(.center)
+            .padding(.top, 20)
+
+        Text("Adjust general app preferences, including report generation, data visualization, and export/import options.")
+            .font(.title3)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
+            .padding(.bottom, 30)
+
+        ScrollView {
+            Form {
+                Section(header: Text("Paths").font(.headline)) {
+                    VStack {
+                        Text("Storage Path:")
+                        TextField("", text: $settings.sharedPath)
+                            .padding(.bottom, 10)
+                        Text("Costumers Files Path:")
+                        TextField("", text: $settings.sharedPath)
+                            .padding(.bottom, 10)
+                        Text("Generated Reports Path:")
+                        TextField("", text: $settings.sharedPath)
+                            .padding(.bottom, 15)
+                    }
+                    
+                }
+                Spacer()
+                Section(header: Text("Appearance").font(.headline)) {
+                    VStack {
+                        Text("Color mode")
+                        Picker("", selection: $settings.themeMode) {
+                            ForEach(ThemeMode.allCases, id: \.self) { mode in
+                                Text(mode.rawValue).tag(mode)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding(.bottom, 10)
                         
-                }
-            }
-            Spacer()
-            Section(header: Text("Appearance").font(.title)) {
-                Picker("Theme Mode:", selection: $settings.themeMode) {
-                    ForEach(ThemeMode.allCases, id: \.self) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text("Animation Style")
+                        Picker("", selection: $settings.animationStyle) {
+                            ForEach(AnimationStyle.allCases, id: \.self) { style in
+                                Text(style.rawValue).tag(style)
+                            }
+                        }
+                        .padding(.bottom, 15)
+                        .pickerStyle(SegmentedPickerStyle())
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-            }
-            Spacer()
-            Section(header: Text("Language").font(.title)) {
-                Picker("Chosen language:", selection: $settings.language) {
-                    ForEach(Language.allCases, id: \.self) { lang in
-                        Text(lang.rawValue).tag(lang)
+                Spacer()
+                Section(header: Text("Language").font(.headline)) {
+                    Picker("", selection: $settings.language) {
+                        ForEach(Language.allCases, id: \.self) { lang in
+                            Text(lang.rawValue).tag(lang)
+                        }
                     }
                 }
+                Spacer()
             }
-            Spacer()
         }
-        .frame(maxWidth: 500, maxHeight: 400)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
